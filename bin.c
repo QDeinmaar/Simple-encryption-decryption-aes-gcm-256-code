@@ -77,8 +77,9 @@ void Fd_key(uint8_t *Key, uint8_t *salt){
 }
 
 uint8_t read_fp(const char *fp, uint8_t *IV,
-                uint8_t Tag,
+                uint8_t *Tag,
                 uint8_t *Add, size_t Add_len,
                 uint8_t *ciphertext, size_t ciphertext_len){
-
-                }
+                    
+                    
+    }
