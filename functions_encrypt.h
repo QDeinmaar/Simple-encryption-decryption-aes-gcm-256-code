@@ -1,4 +1,6 @@
+
 #pragma once
+
 #ifndef FUNCTIONS_ENCRYPT_H
 #define FUNCTIONS_ENCRYPT_H
 

@@ -47,7 +47,7 @@ int main() {
              while(getchar() != '\n');
 
         if(action == 1){
-            printf("Please enter ur unique password to encrypt : ");
+            printf("Please enter your unique password to encrypt : ");
             scanf("%127s", password);
              while(getchar() != '\n');
 
@@ -68,12 +68,22 @@ int main() {
 
             Encrypt_text(plaintext, plaintext_len, Ciphertext, &Ciphertext_len, AAD, AAD_len, Key, IV, Tag );
 
-            printf("The encrypted text is : (%d Bytes)", Ciphertext_len);
+            printf("The encrypted text is : (%d Bytes)\t", Ciphertext_len);
             for(int i = 0; i < Ciphertext_len; i++){
                 printf("%02x", Ciphertext[i]);
             }
 
             printf("\n");
+
+            FILE* fp = fopen("infos", "wb");
+            
+
+            if(fp == NULL){
+                printf("Error file !");
+            } else{
+
+
+            }
 
             memset(password, 0, sizeof(password));
             memset(plaintext, 0, sizeof(plaintext));
