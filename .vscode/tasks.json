@@ -1,0 +1,26 @@
+{
+    "version": "2.0.0",
+    "tasks": [
+        {
+            "label": "Build OpenSSL Program",
+            "type": "shell",
+            "command": "C:/Users/tudor/MYSYS2/mingw64/bin/gcc.exe",
+            "args": [
+                "main.c",
+                "-o",
+                "main.exe",
+                "-I",
+                "C:/Users/tudor/MYSYS2/mingw64/include",
+                "-L",
+                "C:/Users/tudor/MYSYS2/mingw64/lib",
+                "-lssl",
+                "-lcrypto"
+            ],
+            "group": {
+                "kind": "build",
+                "isDefault": true
+            },
+            "problemMatcher": ["$gcc"]
+        }
+    ]
+}
