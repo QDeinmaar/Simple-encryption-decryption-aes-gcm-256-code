@@ -172,6 +172,13 @@ int Decrypted_text (uint8_t *ciphertext, uint8_t *ciphertext_len,
                             EVP_CHIPHER_CTX_free(ctx);
                         }
 
+                        if(!EVP_DecryptUpdate(ctx, NULL, &len, ADD, (int) ADD_len)){
+                            printf("Providing the ADD failed !");
+                            ERR_print_errors(stderr);
+                            EVP_CIPHER_CTX_free(ctx);
+                        }
+
+                        if(! EVP_DecryptUpdate(ctx, plaintext, &len, ciphertext, (int) ciphertext_len))
                     }
 
 
