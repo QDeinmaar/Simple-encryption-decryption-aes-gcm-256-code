@@ -154,10 +154,22 @@ int Decrypted_text (uint8_t *ciphertext, uint8_t *ciphertext_len,
                             ERR_print_errors(stderr);
                         }
 
-                        if(!EVP_DecryptInit_ex(ctx, EVP_aes_256_gcm, NULL, NULL)){
+                        if(!EVP_DecryptInit_ex(ctx, EVP_aes_256_gcm, NULL, NULL, NULL)){
                             printf("Initialisation has Failed !");
                             ERR_print_errors(stderr);
                             EVP_CIPHER_CTX_free(ctx);
+                        }
+
+                        if(!EVP_CIPHER_CTX_ctrl(ctx, EVP_CTRL_GCM_SET_IVLEN, 12, NULL)){
+                            printf("Setting the IV failed !");
+                            ERR_print_errors(stderr);
+                            EVP_CIPHER_CTX_free(ctx);
+                        }
+
+                        if(!EVP_DecryptInit_ex(ctx, NULL, NULL, Key, IV)){
+                            printf("EVP failed to initialize !");
+                            ERR_print_errors(stderr);
+                            EVP_CHIPHER_CTX_free(ctx);
                         }
 
                     }
