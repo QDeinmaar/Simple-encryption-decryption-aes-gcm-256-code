@@ -178,7 +178,24 @@ int Decrypted_text (uint8_t *ciphertext, uint8_t *ciphertext_len,
                             EVP_CIPHER_CTX_free(ctx);
                         }
 
-                        if(! EVP_DecryptUpdate(ctx, plaintext, &len, ciphertext, (int) ciphertext_len))
+                        if(! EVP_DecryptUpdate(ctx, plaintext, &len, ciphertext, (int) ciphertext_len)){
+                            printf("Decryption failed !");
+                            ERR_print_errors(stderr);
+                            EVP_CIPHER_CTX_free(ctx);
+                        }
+
+                        plaintext_len = len;
+
+                        if(!EVP_CIPHER_CTX_ctrl(ctx, EVP_CTRL_GCM_GET_TAG, 16, Tag)){
+                            printf("Failed Tag !");
+                            ERR_print_errors(stderr);
+                            EVP_CIPHER_CTX_free(ctx);
+                        }
+
+                        ret = EVP_DecryptFinal(ctx, plaintext + len, &len);
+
+                        EVP_CIPHER_CTX_free(ctx);
+    
                     }
 
 
