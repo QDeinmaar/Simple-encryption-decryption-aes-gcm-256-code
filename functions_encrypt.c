@@ -195,6 +195,14 @@ int Decrypted_text (uint8_t *ciphertext, uint8_t *ciphertext_len,
                         ret = EVP_DecryptFinal(ctx, plaintext + len, &len);
 
                         EVP_CIPHER_CTX_free(ctx);
+
+                        if(ret > 0) {
+                            plaintext_len += len;
+                            return plaintext_len;
+                        } else {
+                            printf("Decryption has Failed !");
+                            return -1;
+                        }
     
                     }
 
