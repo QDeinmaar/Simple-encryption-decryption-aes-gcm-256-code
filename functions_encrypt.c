@@ -138,7 +138,31 @@ int Encrypt_text(uint8_t *plaintext, size_t plaintext_len,
                     }
 
 
-                    
+int Decrypted_text (uint8_t *ciphertext, uint8_t *ciphertext_len,
+                    uint8_t *ADD, uint8_t ADD_len,
+                    uint8_t *Tag, uint8_t Key, uint8_t *IV, uint8_t plaintext)
+                    {
+                        EVP_CIPHER_CTX *ctx;
+                        int len;
+                        int plaintext_len;
+                        int ret;
+
+                        if(!(ctx = EVP_CIPHER_CTX_new())) {
+
+                        
+                            printf("Creation has failed !");
+                            ERR_print_errors(stderr);
+                        }
+
+                        if(!EVP_DecryptInit_ex(ctx, EVP_aes_256_gcm, NULL, NULL)){
+                            printf("Initialisation has Failed !");
+                            ERR_print_errors(stderr);
+                            EVP_CIPHER_CTX_free(ctx);
+                        }
+
+                    }
+
+
 
 /* 
 #include <stdio.h>
