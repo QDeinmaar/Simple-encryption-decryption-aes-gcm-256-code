@@ -103,7 +103,7 @@ int main() {
                 fgets(Ciphertext, sizeof(Ciphertext), stdin);
                 size_t Ciphertext_len = strlen((char*)Ciphertext);
 
-                Decrypted_text(Ciphertext, &Ciphertext_len, AAD, AAD_len, Tag, *Key, IV, *plaintext);
+                Decrypted_text(Ciphertext, &Ciphertext_len, AAD, AAD_len, Tag, Key, IV, plaintext);
 
             }
             

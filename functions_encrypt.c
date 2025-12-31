@@ -152,7 +152,7 @@ int Decrypted_text (uint8_t *ciphertext, size_t ciphertext_len,
                             printf("Creation has failed !");
                         }
 
-                        if(!EVP_DecryptInit_ex(ctx, EVP_aes_256_gcm, NULL, NULL, NULL)){
+                        if(!EVP_DecryptInit_ex(ctx, EVP_aes_256_gcm(), NULL, NULL, NULL)){
                             printf("Initialisation has Failed !");
                             ERR_print_errors_fp(stderr);
                             EVP_CIPHER_CTX_free(ctx);
