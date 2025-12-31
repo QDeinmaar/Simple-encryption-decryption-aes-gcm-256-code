@@ -73,18 +73,6 @@ int main() {
                 printf("%02x", Ciphertext[i]);
             }
 
-            printf("\n");
-
-            FILE* fp = fopen("infos", "wb");
-            
-
-            if(fp == NULL){
-                printf("Error file !");
-            } else{
-
-
-            }
-
             memset(password, 0, sizeof(password));
             memset(plaintext, 0, sizeof(plaintext));
             memset(Key, 0, sizeof(Key));
@@ -92,6 +80,15 @@ int main() {
             
         }
             if( action == 2);
+        
+            case 2:
+            printf("You choosed Decryption do you want to decrypt a \n 1.Text 2.File\n");
+            scanf("%d", &action);
+            if(action == 1) {
+
+                Decrypted_text(Ciphertext, Ciphertext_len, AAD, AAD_len, Tag, Key, IV, plaintext);
+
+            }
             
     }
     

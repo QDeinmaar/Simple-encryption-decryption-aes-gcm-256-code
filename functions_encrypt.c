@@ -138,13 +138,13 @@ int Encrypt_text(uint8_t *plaintext, size_t plaintext_len,
                     }
 
 
-int Decrypted_text (uint8_t *ciphertext, uint8_t *ciphertext_len,
-                    uint8_t *ADD, uint8_t ADD_len,
+int Decrypted_text (uint8_t *ciphertext, size_t ciphertext_len,
+                    uint8_t *AAD, size_t AAD_len,
                     uint8_t *Tag, uint8_t Key, uint8_t *IV, uint8_t plaintext)
                     {
                         EVP_CIPHER_CTX *ctx;
-                        int len;
-                        int plaintext_len;
+                        int len = 0;
+                        int plaintext_len = 0;
                         int ret;
 
                         if(!(ctx = EVP_CIPHER_CTX_new())) {
@@ -172,10 +172,12 @@ int Decrypted_text (uint8_t *ciphertext, uint8_t *ciphertext_len,
                             EVP_CHIPHER_CTX_free(ctx);
                         }
 
-                        if(!EVP_DecryptUpdate(ctx, NULL, &len, ADD, (int) ADD_len)){
+                        if(AAD && AAD_len > 0) {
+                            if(!EVP_DecryptUpdate(ctx, NULL, &len, AAD, (int) AAD_len)){
                             printf("Providing the ADD failed !");
                             ERR_print_errors(stderr);
                             EVP_CIPHER_CTX_free(ctx);
+                        }
                         }
 
                         if(! EVP_DecryptUpdate(ctx, plaintext, &len, ciphertext, (int) ciphertext_len)){
@@ -186,7 +188,7 @@ int Decrypted_text (uint8_t *ciphertext, uint8_t *ciphertext_len,
 
                         plaintext_len = len;
 
-                        if(!EVP_CIPHER_CTX_ctrl(ctx, EVP_CTRL_GCM_GET_TAG, 16, Tag)){
+                        if(!EVP_CIPHER_CTX_ctrl(ctx, EVP_CTRL_GCM_SET_TAG, 16, Tag)){
                             printf("Failed Tag !");
                             ERR_print_errors(stderr);
                             EVP_CIPHER_CTX_free(ctx);
@@ -203,7 +205,8 @@ int Decrypted_text (uint8_t *ciphertext, uint8_t *ciphertext_len,
                             printf("Decryption has Failed !");
                             return -1;
                         }
-    
+
+                        return 1;
                     }
 
 
