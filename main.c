@@ -2,6 +2,7 @@
 
 #define IV_SIZE 16
 #define KEY_SIZE 32
+#define TAG_LEN 16
 
 uint8_t IV[16] = {0};
 uint8_t Key[32] = {0};
@@ -68,9 +69,16 @@ int main() {
 
             Encrypt_text(plaintext, plaintext_len, Ciphertext, &Ciphertext_len, AAD, AAD_len, Key, IV, Tag );
 
-            printf("The encrypted text is : (%d Bytes)\t", Ciphertext_len);
-            for(int i = 0; i < Ciphertext_len; i++){
-                printf("%02x", Ciphertext[i]);
+            size_t Encrypt_text_len = IV_SIZE + Ciphertext_len + TAG_LEN;
+            uint8_t Encrypt_text_block[Encrypt_text_len];
+
+            memcpy(Encrypt_text_block, IV, IV_SIZE);
+            memcpy(Encrypt_text_block + IV_SIZE, Ciphertext, Ciphertext_len);
+            memcpy(Encrypt_text_block + IV_SIZE + Ciphertext_len, Tag, TAG_LEN);
+
+            printf("The encrypted text is : (%d Bytes)\t", Encrypt_text_len);
+            for(int i = 0; i < Encrypt_text_len; i++){
+                printf("%02x", Encrypt_text_block[i]);
             }
 
             memset(password, 0, sizeof(password));
@@ -86,7 +94,16 @@ int main() {
             scanf("%d", &action);
             if(action == 1) {
 
-                Decrypted_text(Ciphertext, Ciphertext_len, AAD, AAD_len, Tag, Key, IV, plaintext);
+                memcpy(IV, Encrypt_text, 12); // the get the IV form the ciphertext
+
+                
+                memcpy(Tag, Encrypt_text, 16);
+
+                printf("Enter the text you want to Decrypt :");
+                fgets(Ciphertext, sizeof(Ciphertext), stdin);
+                size_t Ciphertext_len = strlen((char*)Ciphertext);
+
+                Decrypted_text(Ciphertext, &Ciphertext_len, AAD, AAD_len, Tag, *Key, IV, *plaintext);
 
             }
             
