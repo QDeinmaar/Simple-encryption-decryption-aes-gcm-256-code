@@ -169,7 +169,7 @@ int Decrypted_text (uint8_t *ciphertext, size_t ciphertext_len,
                         if(!EVP_DecryptInit_ex(ctx, NULL, NULL, Key, IV)){
                             printf("EVP failed to initialize !");
                             ERR_print_errors(stderr);
-                            EVP_CHIPHER_CTX_free(ctx);
+                            EVP_CIPHER_CTX_free(ctx);
                         }
 
                         if(AAD && AAD_len > 0) {
@@ -206,7 +206,10 @@ int Decrypted_text (uint8_t *ciphertext, size_t ciphertext_len,
                             return -1;
                         }
 
-                        return 1;
+                        error:
+
+                        EVP_CIPHER_CTX_free(ctx);
+                        return -1;
                     }
 
 
