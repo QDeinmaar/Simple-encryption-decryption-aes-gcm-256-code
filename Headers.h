@@ -11,6 +11,6 @@
 #include <argon2.h>
 #include <openssl/err.h>
 #include "functions_encrypt.h"
-
+#include <stddef.h>   
 
 #endif
