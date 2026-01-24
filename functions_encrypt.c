@@ -138,9 +138,9 @@ int Encrypt_text(uint8_t *plaintext, size_t plaintext_len,
                     }
 
 
-int Decrypted_text (uint8_t *ciphertext, size_t ciphertext_len,
+int Decrypted_text (uint8_t *ciphertext, size_t *ciphertext_len,
                     uint8_t *AAD, size_t AAD_len,
-                    uint8_t *Tag, uint8_t Key, uint8_t *IV, uint8_t plaintext)
+                    uint8_t *Tag, uint8_t *Key, uint8_t *IV, uint8_t *plaintext)
                     {
                         EVP_CIPHER_CTX *ctx;
                         int len = 0;
@@ -178,7 +178,7 @@ int Decrypted_text (uint8_t *ciphertext, size_t ciphertext_len,
                         }
                         }
 
-                        if(! EVP_DecryptUpdate(ctx, plaintext, &len, ciphertext, (int) ciphertext_len)){
+                        if(! EVP_DecryptUpdate(ctx, plaintext, &len, ciphertext, (uintptr_t) ciphertext_len)){
                             printf("Decryption failed !");
                             ERR_print_errors_fp(stderr);
                             EVP_CIPHER_CTX_free(ctx);
