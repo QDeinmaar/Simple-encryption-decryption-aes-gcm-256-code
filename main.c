@@ -41,7 +41,7 @@ int main() {
     }
 
     int choice;
-    int action;
+    
 
         printf("CHoose an option \n 1.Encrypt\n 2.Decrypt\n 3.Exit\n");
         scanf("%d", &choice);
@@ -49,12 +49,9 @@ int main() {
        
 
         switch(choice){
-            case 1:
-            printf("You choosed Encryption do you want to encrypt a \n 1.Text\n 2.File\n");
-            scanf("%d", &action);
-             while(getchar() != '\n');
+            case 1: {
 
-        if(action == 1){
+
             printf("Please enter your unique password to encrypt : ");
             scanf("%127s", password);
              while(getchar() != '\n');
@@ -71,16 +68,18 @@ int main() {
                 plaintext_len--;
             }
 
-
-
             Encrypt_text(plaintext, plaintext_len, Ciphertext, &Ciphertext_len, AAD, AAD_len, Key, IV, Tag );
 
-            size_t Encrypt_text_len = IV_SIZE + Ciphertext_len + TAG_LEN;
+            size_t Encrypt_text_len = sizeof(salt) + IV_SIZE + Ciphertext_len + TAG_LEN;
             uint8_t Encrypt_text_block[Encrypt_text_len];
 
-            memcpy(Encrypt_text_block, IV, IV_SIZE);
-            memcpy(Encrypt_text_block + IV_SIZE, Ciphertext, Ciphertext_len);
-            memcpy(Encrypt_text_block + IV_SIZE + Ciphertext_len, Tag, TAG_LEN);
+            memcpy(Encrypt_text_block, salt, sizeof(salt));
+            memcpy(Encrypt_text_block + sizeof(salt), IV, IV_SIZE);
+            memcpy(Encrypt_text_block + sizeof(salt) + IV_SIZE,
+                Ciphertext, Ciphertext_len);
+            memcpy(Encrypt_text_block + sizeof(salt) + IV_SIZE + Ciphertext_len,
+                Tag, TAG_LEN);
+
 
             printf("The encrypted text is : (%d Bytes)\t", Encrypt_text_len);
         for(int i = 0; i < Encrypt_text_len; i++){
@@ -91,24 +90,13 @@ int main() {
             memset(plaintext, 0, sizeof(plaintext));
             memset(Key, 0, sizeof(Key));
         return 0;
-            
-        }
-        if( action == 2);
+            }
 
         case 2:
-            printf("You choosed Decryption do you want to decrypt a \n 1.Text\n 2.File\n");
-            scanf("%d", &action);
-
-
-        if(action == 1) {
-    
-            int c;
-        while ((c = getchar()) != '\n' && c != EOF);
-
-   
+        
             char hex_input[2048]; 
             uint8_t Encrypt_text_bytes[1024]; 
-    
+        
             printf("Enter the Hex text: ");
         if (scanf("%2047s", hex_input) != 1) return 1;
 
@@ -127,20 +115,32 @@ int main() {
             printf("\n--- Debugging Data ---\n");
             printf("Full length: %zu bytes\n", full_len);
     
-            memcpy(IV, Encrypt_text_bytes, 12);
-    
-            size_t c_len = full_len - 12 - 16;
-            memcpy(Ciphertext, Encrypt_text_bytes + 12, c_len);
-    
-            memcpy(Tag, Encrypt_text_bytes + (full_len - 16), 16);
+            memcpy(salt, Encrypt_text_bytes, sizeof(salt));
+            memcpy(IV, Encrypt_text_bytes + sizeof(salt), IV_SIZE);
 
+            size_t c_len = full_len - sizeof(salt) - IV_SIZE - TAG_LEN;
+            memcpy(Ciphertext,
+                Encrypt_text_bytes + sizeof(salt) + IV_SIZE,
+                c_len);
+
+            memcpy(Tag, Encrypt_text_bytes + full_len - TAG_LEN, TAG_LEN);
+
+            
+            printf("Enter password to decrypt: ");
+            scanf("%127s", password);
+        while (getchar() != '\n');
+
+            hash_password(password, strlen(password),
+                        salt, sizeof(salt),
+                        Key, sizeof(Key),
+                        m_cost, t_cost, parallelism);
+
+            printf("\n --- Information ---\n");
             printf("IV: "); dump_hex(IV, IV_SIZE);
             printf("AAD: "); dump_hex(AAD, AAD_len);
             printf("KEY: "); dump_hex(Key, 32);
             printf("TAG: "); dump_hex(Tag, 16);
-
-    
-
+            printf("\n"); 
 
             int result_len = Decrypted_text(Ciphertext, &c_len, AAD, AAD_len, Tag, Key, IV, plaintext);
 
@@ -151,8 +151,22 @@ int main() {
         else {
             printf("Decryption failed! The Tag or Key is likely wrong.\n");
         }
+        // Clear sensitive data
+            memset(password, 0, sizeof(password));
+            memset(plaintext, 0, sizeof(plaintext));
+            memset(Key, 0, sizeof(Key));
+        
+        return 0;
+
+    case 3:
+        printf("Exiting\n");
+        break;
+
+    default:
+        printf("Invalid choice!\n");
+        return 1;
     }
+    return 0;
 }
 
-        return 0;
-}
+        
