@@ -138,6 +138,59 @@ int Encrypt_text(uint8_t *plaintext, size_t plaintext_len,
                     }
 
 
+                    int Decrypted_text(uint8_t *ciphertext, size_t *ciphertext_len,
+                   uint8_t *AAD, size_t AAD_len,
+                   uint8_t *Tag, uint8_t *Key, uint8_t *IV, uint8_t *plaintext) 
+{
+    EVP_CIPHER_CTX *ctx;
+    int len = 0;
+    int plaintext_len = 0;
+    int ret;
+
+    if (!(ctx = EVP_CIPHER_CTX_new())) return -1;
+
+    // 1. Initialize Decryption
+    if (!EVP_DecryptInit_ex(ctx, EVP_aes_256_gcm(), NULL, NULL, NULL)) goto error;
+
+    // 2. Set IV Length (GCM default is 12)
+    if (!EVP_CIPHER_CTX_ctrl(ctx, EVP_CTRL_GCM_SET_IVLEN, 12, NULL)) goto error;
+
+    // 3. Set Key and IV
+    if (!EVP_DecryptInit_ex(ctx, NULL, NULL, Key, IV)) goto error;
+
+    // 4. Handle AAD (Additional Authenticated Data)
+    if (AAD && AAD_len > 0) {
+        if (!EVP_DecryptUpdate(ctx, NULL, &len, AAD, (int)AAD_len)) goto error;
+    }
+
+    // 5. Decrypt the Ciphertext 
+    // FIXED: Use *ciphertext_len (dereference the pointer)
+    if (!EVP_DecryptUpdate(ctx, plaintext, &len, ciphertext, (int)*ciphertext_len)) goto error;
+    plaintext_len = len;
+
+    // 6. Set the Expected Tag (GCM verification)
+    if (!EVP_CIPHER_CTX_ctrl(ctx, EVP_CTRL_GCM_SET_TAG, 16, Tag)) goto error;
+
+    // 7. Finalize (This checks if the Tag matches)
+    ret = EVP_DecryptFinal_ex(ctx, plaintext + len, &len);
+
+    EVP_CIPHER_CTX_free(ctx);
+
+    if (ret > 0) {
+        plaintext_len += len;
+        return plaintext_len; // SUCCESS
+    } else {
+        // Authentication failed (Tag mismatch or data tampered with)
+        return -1; 
+    }
+
+error:
+    // We removed ERR_print_errors_fp(stderr) to prevent the Applink crash
+    if (ctx) EVP_CIPHER_CTX_free(ctx);
+    return -1;
+}
+
+/*
 int Decrypted_text (uint8_t *ciphertext, size_t *ciphertext_len,
                     uint8_t *AAD, size_t AAD_len,
                     uint8_t *Tag, uint8_t *Key, uint8_t *IV, uint8_t *plaintext)
@@ -210,7 +263,7 @@ int Decrypted_text (uint8_t *ciphertext, size_t *ciphertext_len,
                         return -1;
                     }
 
-
+*/
 
 /* 
 #include <stdio.h>

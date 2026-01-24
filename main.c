@@ -92,18 +92,30 @@ int main() {
             case 2:
             printf("You choosed Decryption do you want to decrypt a \n 1.Text 2.File\n");
             scanf("%d", &action);
+
+            while (getchar() != '\n'); // Clears the buffer so fgets doesn't skip
+            
             if(action == 1) {
 
-                memcpy(IV, Encrypt_text, 12); // the get the IV form the ciphertext
 
-                
-                memcpy(Tag, Encrypt_text, 16);
-
-                printf("Enter the text you want to Decrypt :");
+                printf("Enter the text you want to Decrypt : ");
                 fgets(Ciphertext, sizeof(Ciphertext), stdin);
                 size_t Ciphertext_len = strlen((char*)Ciphertext);
 
+                size_t Encrypt_text_len = IV_SIZE + Ciphertext_len + TAG_LEN;
+
+                memcpy(IV, Encrypt_text, IV_SIZE); // the get the IV form the ciphertext
+
+                
+                memcpy(Tag, Encrypt_text + Encrypt_text_len - TAG_LEN, TAG_LEN);
+
+
                 Decrypted_text(Ciphertext, &Ciphertext_len, AAD, AAD_len, Tag, Key, IV, plaintext);
+
+                plaintext[Ciphertext_len] = '\0'; 
+
+            printf("\n--- Decryption Successful ---\n");
+            printf("Decrypted Message: %s\n", (char*)plaintext);
 
             }
             
